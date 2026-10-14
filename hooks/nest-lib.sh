@@ -32,7 +32,7 @@ nest_context() {
   home="$spaces/$nest"
   Name=$(nest_title "$nest")
   latest=$(ls "$home/diary" 2>/dev/null | grep '\.md$' | sort | tail -1)
-  printf '%s' "Session name for the diary: $sid. This session is $Name, a named agent whose home is $home (layout in $spaces/README.md). Your diary for today goes to $home/diary/$(date +%F).md, not ~/.claude/diaries. Other sessions of this agent share that day's file: append your own section and never rewrite theirs. Before the session ends, also rewrite handoff.md, put job lessons in notes/, and commit ~/agent-spaces. In the desktop app, set this session's title to $Name with mcp__ccd_session_mgmt__set_session_title (session_id \"self\") if it isn't already."
+  printf '%s' "Session name for the diary: $sid. This session is $Name, a named agent whose home is $home (layout in $spaces/README.md). Your diary for today goes to $home/diary/$(date +%F).md, not ~/.claude/diaries. Other sessions of this agent share that day's file: append your own section and never rewrite theirs. Before the session ends, also rewrite handoff.md, put job lessons in notes/, and commit ~/agent-spaces. Other sessions of $Name may be open, so once you know the task, title this session \"$Name · <the task in two to four words>\" (for example \"$Name · roster wording\") with mcp__ccd_session_mgmt__set_session_title (session_id \"self\"), and retitle it if the task changes."
   printf '\n\n--- %s ---\n%s' "$home/README.md" "$(cat "$home/README.md")"
   printf '\n\n--- %s ---\n%s' "$home/handoff.md" "$(cat "$home/handoff.md" 2>/dev/null)"
   if [ -n "$latest" ]; then

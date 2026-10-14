@@ -21,8 +21,9 @@ the load steps below.
    reads it to reload the nest on resume, `/clear` and after a compaction.
 3. Read `README.md`, `handoff.md` and the newest file in `diary/`, unless the SessionStart
    context already holds them (the hook loads a nest it knows about by itself).
-4. In the desktop app, rename the session to the agent's name with
-   `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`).
+4. In the desktop app, once you know the task, title the session `<Name> · <the task in two to
+   four words>` with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`), so it stands
+   apart from other sessions of the same agent.
 5. Reply in two or three lines: who you are, where the hand-off says things stand, and what you
    will do next (or ask Jun what's next if the hand-off has no open item).
 
