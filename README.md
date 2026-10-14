@@ -8,6 +8,35 @@ $ agent ember
 
 Ember wakes up knowing who it is and what it was doing.
 
+## This fork
+
+This fork runs nests in the Claude desktop app as well as the terminal. A desktop session can't
+take `--settings` or env vars, so the loading moves out of each nest's `wake.sh` and into hooks
+in `~/.claude/settings.json`. The live copies in `~/.claude/hooks/`, `~/.claude/skills/nest/`
+and `~/.local/bin/agent` are symlinks into this repo.
+
+| File | What it does |
+| --- | --- |
+| `hooks/diary-context.sh` (SessionStart) | Loads a nest from `AGENT_NEST` (terminal), the session marker `$AGENT_SPACES/.sessions/<id8>` (resume, `/clear`, compaction) or a one-shot `agent next <name>` pick (15 min). Sets the session title and has a fresh agent session speak first. With no nest, gives the diary path and lists the agents so a session can take on one whose job fits. |
+| `hooks/nest-mention.sh` (UserPromptSubmit) | A message starting with `@name` or `name:` loads that agent. The main way in from the desktop app. |
+| `hooks/nest-lib.sh` | Helpers shared by the two hooks. |
+| `bin/agent` | `agent <name>` (terminal, applies the nest's own `settings.json`) and `agent next <name>`. Works on macOS's bash 3.2. |
+| `skills/nest/SKILL.md` | `/nest <name>` and `/nest new`. |
+
+Nests here have no `wake.sh`; `settings.json` only carries terminal extras such as the theme.
+
+Hook entries in `~/.claude/settings.json`:
+
+```json
+"SessionStart": [{ "matcher": "^(startup|resume|clear|compact)$",
+  "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/diary-context.sh", "timeout": 10 }] }],
+"UserPromptSubmit": [{
+  "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/nest-mention.sh", "timeout": 10 }] }]
+```
+
+`diary-context.sh` also carries this setup's diary rule (`~/.claude/diaries/<project>/<id8>/<date>.md`
+for sessions with no nest) and tells subagents not to write diaries.
+
 ## What a nest is
 
 ```

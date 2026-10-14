@@ -1,11 +1,22 @@
 #!/bin/bash
-# agent <name> [claude args…]: start Claude as the agent living in $AGENT_SPACES/<name>/,
-# with its session name set and its own settings.json (which carries its wake-up hook).
+# agent <name> [claude args…]   start Claude in this terminal as the agent in $AGENT_SPACES/<name>/
+# agent next <name>             make the next new session (desktop app or terminal) wake as <name>
+# The SessionStart hook ~/.claude/hooks/diary-context.sh loads the nest. Adapted from
+# github.com/mackenziebowes/claude-nests; bash 3.2 safe.
 set -e
 export AGENT_SPACES="${AGENT_SPACES:-$HOME/agent-spaces}"
-name="${1:?usage: agent <name> [claude args…]   (homes: $(ls "$AGENT_SPACES" 2>/dev/null | tr '\n' ' '))}"; shift
-home="$AGENT_SPACES/$name"
-[ -d "$home" ] || { echo "agent: no home at $home; make one first (see the README)" >&2; exit 1; }
-args=(-n "${name^}")
-[ -f "$home/settings.json" ] && args+=(--settings "$home/settings.json")
+usage="usage: agent <name> [claude args…] | agent next <name>   (nests: $(cd "$AGENT_SPACES" 2>/dev/null && ls -d */ 2>/dev/null | tr -d / | tr '\n' ' '))"
+name="${1:?$usage}"; shift
+if [ "$name" = "next" ]; then
+  name="${1:?$usage}"
+  [ -f "$AGENT_SPACES/$name/README.md" ] || { echo "agent: no nest at $AGENT_SPACES/$name" >&2; exit 1; }
+  printf '%s\n' "$name" > "$AGENT_SPACES/.next"
+  echo "The next new session in the next 15 minutes wakes as $name."
+  exit 0
+fi
+[ -f "$AGENT_SPACES/$name/README.md" ] || { echo "agent: no nest at $AGENT_SPACES/$name; make one with /nest new" >&2; exit 1; }
+export AGENT_NEST="$name"
+args=(-n "$(printf '%s' "${name:0:1}" | tr '[:lower:]' '[:upper:]')${name:1}")
+# A nest's own settings.json (its hooks, its theme) applies on top of the usual ones.
+[ -f "$AGENT_SPACES/$name/settings.json" ] && args+=(--settings "$AGENT_SPACES/$name/settings.json")
 exec claude "${args[@]}" "$@"
