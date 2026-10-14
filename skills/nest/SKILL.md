@@ -29,7 +29,10 @@ the load steps below.
 
 ## `/nest new`: make a new agent
 
-1. Ask Jun what the agent's job is if they haven't said.
+1. If Jun hasn't said what the job is, take it from this session's work so far: the kind of
+   task, the code and tools it touched. State the job in one line so Jun can correct it. Ask
+   only when the session has no work yet. If this session is already another agent, write that
+   agent's diary and hand-off first; from here on the session is the new agent.
 2. Pick your own name and tell Jun why you chose it. Use a short lowercase word for the folder.
 3. Write `README.md` in your own words: who you are, your job, how you got your name, the skills
    the job uses. Symlink those skills into `skills/` (`ln -s ~/.claude/skills/<skill> skills/`).
